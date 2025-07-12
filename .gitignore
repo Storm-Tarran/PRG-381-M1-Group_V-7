@@ -1,8 +1,53 @@
+# NetBeans specific files
 nbproject/private/
+nbproject/build-impl.xml
+nbproject/private/
+nbbuild/
 build/
 dist/
-*.class
+nbdist/
+nbdist.zip
+
+# Compiled class files
+**/build/
+**/dist/
+**/out/
+**/target/
+
+# NetBeans cache and logs
+/.netbeans/
+
+# Maven / Gradle files
+target/
+.gradle/
+build/
+
+# Logs
 *.log
+
+# OS generated files
 .DS_Store
 Thumbs.db
 
+# IntelliJ IDEA files
+.idea/
+*.iml
+
+# Eclipse files
+.project
+.classpath
+.settings/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Java specific
+*.class
+
+# WAR files
+*.war
+
+# Package distribution files
+*.jar
+*.ear
