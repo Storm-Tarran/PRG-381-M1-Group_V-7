@@ -26,7 +26,7 @@
             </p>
             <!-- Feedback placeholder for errors -->
             <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic"></div>
-            <form id="loginForm" action="LoginServlet" class="space-y-6">
+            <form id="loginForm" action="${pageContext.request.contextPath}/LoginServlet" method="post" class="space-y-6">
                <input type="text" placeholder="Email (e.g., user@example.com)" name="email"
                   class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-pink-500"/>
                <div class="relative w-full">

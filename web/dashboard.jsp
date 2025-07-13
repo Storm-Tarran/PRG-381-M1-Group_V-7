@@ -32,7 +32,7 @@
             </p>
             <!-- Logout Button -->
             <div class="text-center">
-               <form action="logout.jsp" method="post">
+               <form action="LogoutServlet" method="get">
                   <button type="submit"
                      class="inline-block px-6 py-3 bg-gradient-to-r from-red-500 via-pink-500 to-yellow-500 text-white font-semibold rounded-lg
                      hover:opacity-90 transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
