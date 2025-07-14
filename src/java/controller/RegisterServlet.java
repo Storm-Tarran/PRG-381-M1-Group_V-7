@@ -52,14 +52,16 @@ public class RegisterServlet extends HttpServlet {
             try (Connection  conn = DriverManager.getConnection(dbURL, dbUSER, dbPASSWORD);
                  PreparedStatement ps = conn.prepareStatement(
                      "INSERT INTO login.login_credentials(studentnumber, studentname, studentsurname, studentemail, studentphone, studentpassword) VALUES(?,?,?,?,?,?)");
-                 PreparedStatement dup = conn.prepareStatement("SELECT 1 FROM login.login_credentials WHERE studentnumber = ?");
+                 PreparedStatement dup = conn.prepareStatement("SELECT 1 FROM login.login_credentials WHERE studentnumber = ? OR studentemail = ?");
             ) {
-                /* duplicate check */
+                // duplicate check 
                 dup.setString(1, studentNumber);
+                dup.setString(2, studentEmail);
                 try (ResultSet rs = dup.executeQuery()) {
                     if (rs.next()) {
                         // number already exists
-                        response.sendRedirect(request.getContextPath() + "/login.jsp?error=duplicate");
+                        String msg = java.net.URLEncoder.encode("Account already exists – please log in.", java.nio.charset.StandardCharsets.UTF_8);
+                        response.sendRedirect(request.getContextPath() + "/register.jsp?msg=" + msg);
                         return;
                     }
                 }
@@ -73,7 +75,7 @@ public class RegisterServlet extends HttpServlet {
 
                 ps.executeUpdate();
                 request.getSession().setAttribute("studentName", studentName);
-                response.sendRedirect(request.getContextPath() + "/dashboard.jsp");   // success
+                response.sendRedirect(request.getContextPath() + "/login.jsp?reg=success");   // success
             }
         } catch (ClassNotFoundException ex) {
             logger.log(Level.SEVERE, "PostgreSQL driver not found, can't connect", ex);
@@ -84,6 +86,7 @@ public class RegisterServlet extends HttpServlet {
         }
         
     }
+ 
 
 
 }

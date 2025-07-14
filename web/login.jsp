@@ -26,11 +26,13 @@
             </p>
             <!-- Feedback placeholder for errors -->
             <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic">
-                <% String logMessage = (String) session.getAttribute("loginError");
-                    if(logMessage != null){
-                    out.print(logMessage);
-                    session.removeAttribute("loginMessage");}
-                %>
+               <% String msg = (String) session.getAttribute("loginFeedback");
+                if (msg != null) {
+                out.print(msg);
+                session.removeAttribute("loginFeedback");
+                } 
+               %>
+
             </div>
             <form id="loginForm" action="${pageContext.request.contextPath}/LoginServlet" method="post" class="space-y-6">
                <input type="text" placeholder="Email (e.g., user@example.com)" name="email"

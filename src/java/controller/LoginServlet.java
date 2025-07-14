@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
     private static final String dbUSER = "Admin4";
     private static final String dbPASSWORD = "Admin4";
 
-    /* load driver once */
+    // load driver once
     static {
         try {
             Class.forName("org.postgresql.Driver");
@@ -67,7 +67,7 @@ public class LoginServlet extends HttpServlet {
                     String name = rs.getString("studentname");
 
                     if (BCrypt.checkpw(passwd, hash)) {
-                        /* success → store name in session */
+                        // success → store name in session 
                         HttpSession session = request.getSession(true);
                         session.setAttribute("studentName", name);
                         response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
@@ -81,7 +81,7 @@ public class LoginServlet extends HttpServlet {
             }
             //New http session for login issues
             HttpSession session = request.getSession();
-            session.setAttribute("loginError", errMessage);
+            session.setAttribute("loginFeedback", errMessage);
             response.sendRedirect("login.jsp");
 
         } catch (SQLException e) {

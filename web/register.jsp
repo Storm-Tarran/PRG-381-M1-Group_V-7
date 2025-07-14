@@ -25,7 +25,9 @@
                Register to access wellness services.
             </p>
             <!-- Feedback -->
-            <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic"></div>
+            <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic">
+                <%= request.getParameter("msg") == null ? "" : request.getParameter("msg") %>
+            </div>
             <form action="${pageContext.request.contextPath}/RegisterServlet" method="post" id="registerForm" class="space-y-6">
                <input type="text" placeholder="Student Number (digits only)" name="student_number"
                   class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-pink-500" required />
