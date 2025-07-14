@@ -20,6 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.SQLException;
+//import java.util.HashSet;
+//import java.util.Set;
 
 
 /**
@@ -51,6 +53,8 @@ public class LoginServlet extends HttpServlet {
         
             String email = request.getParameter("email");
             String passwd = request.getParameter("password");
+            
+            String errMessage = "Invalid email or password. Try again";
 
         try (Connection conn = DriverManager.getConnection(dbURL, dbUSER, dbPASSWORD);
              PreparedStatement ps = conn.prepareStatement("SELECT studentname, studentpassword FROM login.login_credentials WHERE studentemail = ?")) {
@@ -68,12 +72,17 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("studentName", name);
                         response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
                         return; 
+                    }else{
+                        errMessage = "Invalid email or password";
                     }
+                }else{
+                    errMessage = "Invalid email or password";
                 }
             }
-
-            /* fall through = invalid email / password */
-            response.sendRedirect(request.getContextPath() + "/login.jsp?error=invalid");
+            //New http session for login issues
+            HttpSession session = request.getSession();
+            session.setAttribute("loginError", errMessage);
+            response.sendRedirect("login.jsp");
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "DB error", e);

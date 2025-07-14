@@ -25,7 +25,13 @@
                Login to access wellness services.
             </p>
             <!-- Feedback placeholder for errors -->
-            <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic"></div>
+            <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic">
+                <% String logMessage = (String) session.getAttribute("loginError");
+                    if(logMessage != null){
+                    out.print(logMessage);
+                    session.removeAttribute("loginMessage");}
+                %>
+            </div>
             <form id="loginForm" action="${pageContext.request.contextPath}/LoginServlet" method="post" class="space-y-6">
                <input type="text" placeholder="Email (e.g., user@example.com)" name="email"
                   class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-pink-500"/>
