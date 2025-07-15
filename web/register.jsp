@@ -15,7 +15,7 @@
    <body class="pl-8 pr-8 pt-20 pb-20 bg-black flex items-center justify-center animate-fadeIn bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div>
          <div class="w-full max-w-xl bg-gray-900/50 backdrop-blur-lg p-8 rounded-2xl border border-gray-800 shadow-lg relative">
-            <!-- Decorative Corners -->
+
             <div class="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-pink-500 rounded-tl-2xl"></div>
             <div class="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-red-400 rounded-tr-2xl"></div>
             <div class="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-yellow-500 rounded-bl-2xl"></div>
@@ -24,7 +24,7 @@
             <p class="text-gray-400 mb-8 text-center">
                Register to access wellness services.
             </p>
-            <!-- Feedback -->
+
             <div id="feedback" class="mb-4 text-sm text-center text-red-400 italic">
                 <%= request.getParameter("msg") == null ? "" : request.getParameter("msg") %>
             </div>
@@ -62,7 +62,7 @@
                <a href="login.jsp" class="text-pink-400 hover:underline">Login here</a>
             </p>
          </div>
-         <!-- Footer -->
+
          <footer class="mt-10 text-center text-gray-600 text-sm">
             &copy; 2025 CampusCare. All rights reserved.
          </footer>

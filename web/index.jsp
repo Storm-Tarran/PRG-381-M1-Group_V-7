@@ -13,13 +13,11 @@
    <body class="bg-black h-screen flex items-center justify-center animate-fadeIn bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div class="max-w-4xl w-full px-6">
          <div class="relative bg-gray-900/50 backdrop-blur-xl rounded-2xl p-8 border border-gray-800">
-            <!-- Decorative Corners -->
             <div class="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-pink-500 rounded-tl-2xl"></div>
             <div class="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-red-400 rounded-tr-2xl"></div>
             <div class="absolute bottom-0 left-0 w-20 h-20 border-b-2 border-l-2 border-yellow-500 rounded-bl-2xl"></div>
             <div class="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-pink-500 rounded-br-2xl"></div>
             <div class="relative">
-               <!-- Logo -->
                <div class="flex justify-center mb-6">
                   <div class="text-5xl text-pink-500">🧠</div>
                </div>
@@ -30,7 +28,6 @@
                <p class="text-lg text-gray-300 mb-8 text-center">
                   Providing students with wellness services designed to support their academic and personal growth.
                </p>
-               <!-- Buttons -->
                <div class="flex flex-col md:flex-row justify-center gap-6">
                   <a href="register.jsp" aria-label="Register for a new student wellness account"
                      class="group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-gray-700 hover:border-pink-500 hover:bg-pink-500/10 transition-all duration-300 ease-in-out transform hover:scale-105 text-white">
@@ -43,7 +40,6 @@
                </div>
             </div>
          </div>
-         <!-- Footer -->
          <footer class="mt-10 text-center text-gray-600 text-sm">
             &copy; 2025 CampusCare. All rights reserved.
          </footer>

@@ -35,7 +35,7 @@ form.addEventListener("submit", function (e) {
     return;
   }
 
-  // Auto-format South African phone numbers
+  // Format South African phone numbers
   if (phone.startsWith("0")) {
     phone = "+27" + phone.slice(1); // 0821234567 -> +27821234567
   } else if (phone.startsWith("27") && phone.length === 11) {

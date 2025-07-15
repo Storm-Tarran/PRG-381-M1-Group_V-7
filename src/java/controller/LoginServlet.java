@@ -1,94 +1,79 @@
 package controller;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
+import dao.DaoUser;
+import model.User;
+import util.DBConnection;
 
 import java.io.IOException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.mindrot.jbcrypt.BCrypt;
-import java.sql.SQLException;
-//import java.util.HashSet;
-//import java.util.Set;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
 
-/**
- *
- * @author USER
- */
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
-    
-    private static final Logger logger =
-            Logger.getLogger(LoginServlet.class.getName());
 
-    private static final String dbURL ="jdbc:postgresql://localhost:5432/StudentWellness";
-    private static final String dbUSER = "Admin4";
-    private static final String dbPASSWORD = "Admin4";
+    private static final Logger logger = Logger.getLogger(LoginServlet.class.getName());
+    private final DaoUser daoUser = new DaoUser(); // DAO for interacting with the user table
 
-    // load driver once
-    static {
+    @Override
+    public void init() throws ServletException {
         try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError(e);
+            // Load DB config properties once when the servlet initializes
+            DBConnection.loadProperties(getServletContext());
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to load DB properties", e);
+            throw new ServletException("Database configuration error", e);
         }
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-            String email = request.getParameter("email");
-            String passwd = request.getParameter("password");
-            
-            String errMessage = "Invalid email or password. Try again";
 
-        try (Connection conn = DriverManager.getConnection(dbURL, dbUSER, dbPASSWORD);
-             PreparedStatement ps = conn.prepareStatement("SELECT studentname, studentpassword FROM login.login_credentials WHERE studentemail = ?")) {
+        // Get login credentials from the request
+        String email = request.getParameter("email");
+        String plainPassword = request.getParameter("password");
 
-            ps.setString(1, email);
+        // Basic input validation
+        if (email == null || plainPassword == null || email.isEmpty() || plainPassword.isEmpty()) {
+            logger.warning("Missing login credentials");
+            redirectWithError(request, response, "Email and password are required.");
+            return;
+        }
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String hash = rs.getString("studentpassword");
-                    String name = rs.getString("studentname");
+        try {
+            // Attempt to log in the user using email and password
+            User user = daoUser.loginUser(email.trim(), plainPassword);
 
-                    if (BCrypt.checkpw(passwd, hash)) {
-                        // success → store name in session 
-                        HttpSession session = request.getSession(true);
-                        session.setAttribute("studentName", name);
-                        response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
-                        return; 
-                    }else{
-                        errMessage = "Invalid email or password";
-                    }
-                }else{
-                    errMessage = "Invalid email or password";
-                }
+            if (user != null) {
+                // Create a session and store user info
+                HttpSession session = request.getSession(true);
+                session.setAttribute("studentName", user.getName());
+                session.setAttribute("studentEmail", user.getEmail());
+
+                // Redirect to dashboard after successful login
+                response.sendRedirect("dashboard.jsp");
+            } else {
+                // Invalid login attempt
+                redirectWithError(request, response, "Invalid email or password.");
             }
-            //New http session for login issues
-            HttpSession session = request.getSession();
-            session.setAttribute("loginFeedback", errMessage);
-            response.sendRedirect("login.jsp");
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "DB error", e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.log(Level.SEVERE, "Login failed", e);
+            // Redirect with generic DB error message
+            response.sendRedirect("login.jsp?msg=Database+error");
         }
-    }   
- 
+    }
 
+    // Helper method to store error message in session and redirect to login page
+    private void redirectWithError(HttpServletRequest request, HttpServletResponse response, String msg)
+            throws IOException {
+        HttpSession session = request.getSession();
+        session.setAttribute("loginFeedback", msg);
+        response.sendRedirect("login.jsp");
+    }
 }
