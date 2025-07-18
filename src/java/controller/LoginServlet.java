@@ -16,13 +16,16 @@ import jakarta.servlet.http.*;
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
 
+    // Logger to record events for debugging or auditing
     private static final Logger logger = Logger.getLogger(LoginServlet.class.getName());
-    private final DaoUser daoUser = new DaoUser(); // DAO for interacting with the user table
+
+    // DAO class to interact with the database for user login (not handling login count here)
+    private final DaoUser daoUser = new DaoUser();
 
     @Override
     public void init() throws ServletException {
         try {
-            // Load DB config properties once when the servlet initializes
+            // Load database configuration once when the servlet starts
             DBConnection.loadProperties(getServletContext());
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to load DB properties", e);
@@ -34,46 +37,66 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Get login credentials from the request
+        // Get login credentials from form
         String email = request.getParameter("email");
         String plainPassword = request.getParameter("password");
 
-        // Basic input validation
+        // Check for empty email or password fields
         if (email == null || plainPassword == null || email.isEmpty() || plainPassword.isEmpty()) {
-            logger.warning("Missing login credentials");
             redirectWithError(request, response, "Email and password are required.");
             return;
         }
 
+        // Get or create a session for the current user
+        HttpSession session = request.getSession(true);
+
+        // Get the current login attempt count from the session
+        Integer loginCount = (Integer) session.getAttribute("loginCount");
+
+        // If it's the user's first login attempt, initialize count to 0
+        if (loginCount == null) {
+            loginCount = 0;
+        }
+
+        // If user has already failed 4 or more times, block login
+        if (loginCount >= 4) {
+            redirectWithError(request, response, "Too many login attempts. Try again later.");
+            return;
+        }
+
         try {
-            // Attempt to log in the user using email and password
+            // Try to authenticate the user using provided credentials
             User user = daoUser.loginUser(email.trim(), plainPassword);
 
             if (user != null) {
-                // Create a session and store user info
-                HttpSession session = request.getSession(true);
+                // If login is successful, store user info in session
                 session.setAttribute("studentName", user.getName());
                 session.setAttribute("studentEmail", user.getEmail());
 
-                // Redirect to dashboard after successful login
+                // Reset the login attempt counter on successful login
+                session.removeAttribute("loginCount");
+
+                // Redirect to the dashboard page
                 response.sendRedirect("dashboard.jsp");
             } else {
-                // Invalid login attempt
+                // Failed login: increment the login counter
+                loginCount++;
+                session.setAttribute("loginCount", loginCount);
+
+                // Notify user of failed login
                 redirectWithError(request, response, "Invalid email or password.");
             }
 
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Login failed", e);
-            // Redirect with generic DB error message
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Login error", e);
             response.sendRedirect("login.jsp?msg=Database+error");
         }
     }
 
-    // Helper method to store error message in session and redirect to login page
+    // Helper method to display an error message and redirect to login page
     private void redirectWithError(HttpServletRequest request, HttpServletResponse response, String msg)
             throws IOException {
-        HttpSession session = request.getSession();
-        session.setAttribute("loginFeedback", msg);
+        request.getSession().setAttribute("loginFeedback", msg);
         response.sendRedirect("login.jsp");
     }
 }
